@@ -1,0 +1,7 @@
+Task:
+Create /health endpoint.
+
+Expected:
+{"status":"ok"}
+
+Add tests.

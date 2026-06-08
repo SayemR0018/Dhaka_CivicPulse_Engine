@@ -1,0 +1,8 @@
+fastapi
+uvicorn
+pytest
+httpx
+PyJWT
+pwdlib
+bcrypt
+python-multipart
