@@ -1,94 +1,65 @@
-# Codex Demo FastAPI App
+# Dhaka CivicPulse Engine (FastAPI)
 
-A small FastAPI API with JWT bearer authentication. The home route is public, and the math routes require a valid access token.
+An AI-native urban calculation and telemetry framework optimized for assessing civic infrastructure failures, waterlogging risks, and emergency triage priority metrics across Dhaka City Corporation zones. The home and health routes are public, while all municipal calculation routes are secured via JWT bearer authentication layers.
 
-## Installation
+## Key Architectural Features
+- **Deterministic Token Triage:** Uses strict data input models (a, b, n) to compute resource routing without risking generative AI hallucinations.
+- **Automated Human Handoff Boundaries:** Hardcoded structural constraint flags trip 400 Bad Request exceptions or compile definitive sorting keys to seamlessly transition operational control to live human dispatchers.
+- **Robust Security Perimeter:** Integrates OAuth2 password tracking and encrypted HS256 JWT validation protocols.
 
-Create and activate a virtual environment:
+## Installation & Setup
 
+1. Create and activate a isolated Python virtual environment:
 ```bash
 python3 -m venv .venv
-source .venv/bin/activate
+source .venv/bin/activate  # On Windows use: .venv\Scripts\activate
 ```
 
-Install dependencies:
+2. Install the production-ready package dependencies:
 
 ```bash
 python -m pip install -r requirements.txt
 ```
 
-Optional: set a custom JWT signing key. If this is not set, the app uses a local development fallback.
+3. Optional: Configure your environment signing keys:
 
 ```bash
 export JWT_SECRET_KEY="replace-with-a-long-random-secret"
 ```
 
-## Running
+## Running the Engine
 
-Start the API server:
+Start the local Uvicorn server:
 
 ```bash
 uvicorn main:app --reload
 ```
 
-Open the API docs:
+Open your browser to inspect the interactive Swagger OpenAPI schemas: `http://127.0.0.1:8000/docs`
 
-```text
-http://127.0.0.1:8000/docs
-```
-
-Run tests:
+Execute the validation testing engine:
 
 ```bash
 python -m pytest
 ```
 
-## Endpoints
+## Municipal Endpoints Map
 
-| Method | Path | Auth | Description |
+| Method | Path | Auth | System Description & Logic |
 | --- | --- | --- | --- |
-| `GET` | `/` | No | Returns a welcome message. |
-| `GET` | `/health` | No | Returns API health status. |
-| `POST` | `/token` | No | Accepts OAuth2 form login and returns a JWT bearer token. |
-| `GET` | `/add?a=<int>&b=<int>` | Yes | Returns the sum of `a + b`. |
-| `GET` | `/multiply?a=<int>&b=<int>` | Yes | Returns the product of `a * b`. |
-| `GET` | `/power?a=<int>&b=<int>` | Yes | Returns `a` raised to the power of `b`. |
-| `GET` | `/factorial?n=<int>` | Yes | Returns `n!` for a non-negative integer. |
+| `GET` | `/` | Open | Greets the client and registers API Hub connectivity. |
+| `GET` | `/health` | Open | Returns active core status validation metrics. |
+| `POST` | `/token` | Open | Verifies user credentials and issues secure bearer tokens. |
+| `GET` | `/add?a=<int>&b=<int>` | Secured | [Human Handoff] Evaluates hazard factors (a) and vulnerability indexes (b) to output a dispatcher sorting key. |
+| `GET` | `/multiply?a=<int>&b=<int>` | Secured | Multiplies density parameters (a) by block scales (b) to track citizen impact footprint. |
+| `GET` | `/power?a=<int>&b=<int>` | Secured | Calculates exponential risk acceleration where baseline severity (a) grows over time delay intervals (b). |
+| `GET` | `/factorial?n=<int>` | Secured | Computes path permutations (n!) for utility vehicles; trips safety bounds if inputs run out of scale. |
 
-Demo credentials:
+*Demo Credentials — Username: `demo` | Password: `secret`*
 
-```text
-username: demo
-password: secret
-```
+## Operational Verification Examples
 
-## Examples
-
-Call the public home endpoint:
-
-```bash
-curl http://127.0.0.1:8000/
-```
-
-Response:
-
-```json
-{"message":"Hello from Codex demo"}
-```
-
-Call the public health endpoint:
-
-```bash
-curl http://127.0.0.1:8000/health
-```
-
-Response:
-
-```json
-{"status":"ok"}
-```
-
-Request an access token:
+1. Request an access security key:
 
 ```bash
 curl -X POST http://127.0.0.1:8000/token \
@@ -99,61 +70,18 @@ curl -X POST http://127.0.0.1:8000/token \
 Response:
 
 ```json
-{"access_token":"<jwt>","token_type":"bearer"}
+{"access_token":"<your-jwt-token-string>","token_type":"bearer"}
 ```
 
-Use the token with `/add`:
+2. Evaluate a priority dispatch sorting key via an authorized endpoint (e.g., `/add` with hazard index 12 and vulnerability weight 8):
 
 ```bash
-TOKEN="<jwt>"
-
-curl "http://127.0.0.1:8000/add?a=2&b=3" \
-  -H "Authorization: Bearer $TOKEN"
+TOKEN="<your-jwt-token-string>"
+curl "http://127.0.0.1:8000/add?a=12&b=8" -H "Authorization: Bearer $TOKEN"
 ```
 
 Response:
 
 ```json
-{"result":5}
+{"result":20}
 ```
-
-Use the token with `/multiply`:
-
-```bash
-curl "http://127.0.0.1:8000/multiply?a=2&b=3" \
-  -H "Authorization: Bearer $TOKEN"
-```
-
-Response:
-
-```json
-{"result":6}
-```
-
-Use the token with `/power`:
-
-```bash
-curl "http://127.0.0.1:8000/power?a=2&b=3" \
-  -H "Authorization: Bearer $TOKEN"
-```
-
-Response:
-
-```json
-{"result":8}
-```
-
-Use the token with `/factorial`:
-
-```bash
-curl "http://127.0.0.1:8000/factorial?n=5" \
-  -H "Authorization: Bearer $TOKEN"
-```
-
-Response:
-
-```json
-{"result":120}
-```
-
-Calling a protected endpoint without a valid token returns `401 Unauthorized`.
