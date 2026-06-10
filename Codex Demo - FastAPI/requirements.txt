@@ -6,3 +6,5 @@ PyJWT
 pwdlib
 bcrypt
 python-multipart
+openai
+python-dotenv

@@ -197,3 +197,84 @@ def test_factorial_rejects_negative_input():
 def test_math_query_validation(path):
     response = client.get(path, headers=make_auth_headers({"sub": "demo"}))
     assert response.status_code == 422
+
+def test_triage_requires_token():
+    response = client.post("/civic/triage", json={"report": "Fire at Sector 3"})
+    assert response.status_code == 401
+
+def test_triage_emergency_route(monkeypatch):
+    from unittest.mock import MagicMock
+    mock_response = MagicMock()
+    mock_choice = MagicMock()
+    mock_message = MagicMock()
+    
+    mock_tool_call = MagicMock()
+    mock_tool_call.function.name = "dispatch_emergency_teams"
+    mock_tool_call.function.arguments = '{"hazard_index": 8, "vulnerability_weight": 5}'
+    
+    mock_message.tool_calls = [mock_tool_call]
+    mock_message.content = None
+    mock_choice.message = mock_message
+    mock_response.choices = [mock_choice]
+    
+    from main import openai_client
+    monkeypatch.setattr(openai_client.chat.completions, "create", lambda **kwargs: mock_response)
+    
+    response = client.post(
+        "/civic/triage",
+        json={"report": "Emergency fire accident"},
+        headers=get_auth_headers()
+    )
+    assert response.status_code == 200
+    assert response.json()["status"] == "Critical Emergency Dispatched"
+    assert response.json()["priority_key"] == 13
+
+def test_triage_utility_route(monkeypatch):
+    from unittest.mock import MagicMock
+    mock_response = MagicMock()
+    mock_choice = MagicMock()
+    mock_message = MagicMock()
+    
+    mock_tool_call = MagicMock()
+    mock_tool_call.function.name = "log_municipal_utility_ticket"
+    mock_tool_call.function.arguments = '{"block_identifier": 5}'
+    
+    mock_message.tool_calls = [mock_tool_call]
+    mock_message.content = None
+    mock_choice.message = mock_message
+    mock_response.choices = [mock_choice]
+    
+    from main import openai_client
+    monkeypatch.setattr(openai_client.chat.completions, "create", lambda **kwargs: mock_response)
+    
+    response = client.post(
+        "/civic/triage",
+        json={"report": "Waterlogging in ward 5"},
+        headers=get_auth_headers()
+    )
+    assert response.status_code == 200
+    assert response.json()["status"] == "Municipal Ticket Logged"
+    assert response.json()["routing_permutations"] == 120
+
+def test_triage_unresolved_route(monkeypatch):
+    from unittest.mock import MagicMock
+    mock_response = MagicMock()
+    mock_choice = MagicMock()
+    mock_message = MagicMock()
+    
+    mock_message.tool_calls = None
+    mock_message.content = "Not enough details to categorize."
+    mock_choice.message = mock_message
+    mock_response.choices = [mock_choice]
+    
+    from main import openai_client
+    monkeypatch.setattr(openai_client.chat.completions, "create", lambda **kwargs: mock_response)
+    
+    response = client.post(
+        "/civic/triage",
+        json={"report": "Hello there"},
+        headers=get_auth_headers()
+    )
+    assert response.status_code == 200
+    assert response.json()["status"] == "Unresolved Queue - Human Action Required"
+    assert response.json()["detail"] == "Not enough details to categorize."
