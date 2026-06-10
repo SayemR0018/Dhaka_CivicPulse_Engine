@@ -110,3 +110,15 @@ Response:
   "routing_permutations": 120
 }
 ```
+
+## Interactive Streamlit Frontend Dashboard
+
+The Dhaka CivicPulse Engine now runs an interactive frontend web application alongside the core API backend. This interface allows developers and administrators to ingest raw citizen reports and visualize live agent triage decisions in real time.
+
+### Booting the UI Layer
+
+Once the FastAPI backend server is running (`uvicorn main:app --reload`), you can start the Streamlit UI layer using:
+
+```bash
+python -m streamlit run app_ui.py
+```

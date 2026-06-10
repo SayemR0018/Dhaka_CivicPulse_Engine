@@ -22,3 +22,6 @@ The Supervisor Agent (FastAPI `/civic/triage` endpoint) orchestrates two primary
 ## Cognitive Architectural Limits & Human Handoff
 1. **The Core Task Execution:** The automated layers handle complex statistical computations (such as cascading utility risk evaluation and block permutation layouts).
 2. **The Human Handoff Threshold:** The system establishes automated boundaries. If structural permutations overload algorithmic capacity (throwing a `400 Bad Request` execution error), or once a critical asset priority sorting index is compiled, the workflow shifts directly to live human dispatch coordinators.
+
+## Frontend Widget Integration & Security Scopes
+All interactive dashboard widgets (e.g. report text fields, trigger submission controls) verify and enforce that their outgoing requests route securely through FastAPI's JWT bearer authentication headers. Unauthenticated or expired widget sessions will fail to trigger triage calculations.
